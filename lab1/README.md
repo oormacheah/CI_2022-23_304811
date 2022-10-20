@@ -9,5 +9,8 @@ Removing the list duplicates before deploying the search algorithm is useful sin
 ## Breadth-First and Depth-First
 Depth-First finds a solution first, as expected, but traversing all the possible paths (even with the optimizations) is an extremely expensive task. For N=10 and further, the algorithm doesn't end.
 
-## A* (to be implemented)
+## A*
+A first attempt was made by choosing h(.) as the number of total elements to a given state, giving priority to short-length lists. This is sub-optimal since shorter lists will require more nodes to be explored before reaching a full set covering.
+
+A second idea consists in a heuristic function h(.) that gives priority directly considering the "bloat". For this purpose, a Counter object will used. Given a state, the function creates a Counter for it. Then, it will return the bloat. This approach yields good solutions but it is quite slow. Below are the results:
 
