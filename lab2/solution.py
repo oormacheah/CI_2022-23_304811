@@ -1,42 +1,56 @@
 import logging
-import numpy as np
+import random
 from collections import namedtuple
-from math import inf
-from itertools import chain
-from typing import Callable
 
-from utils import *
-from gx_utils import *
+from GA_functions import *
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-PROBLEM_SIZE = 500
-POPULATION_SIZE = 5
-OFFSPRING_SIZE = 3
+N = 1000
 
-NUM_GENERATIONS = 100
+POPULATION_SIZE = 300
+OFFSPRING_SIZE = 300
+NUM_GENERATIONS = 1000
+TOURNAMENT_SIZE = 2
+MUTATION_RATE = 0.3
+
+GOAL = set(range(N))
 
 Individual = namedtuple("Individual", ["genome", "fitness"])
 
-def onemax(genome):
-    return sum(genome)
-
-
-def tournament(population, tournament_size=2):
-    return max(random.choices(population, k=tournament_size), key=lambda i: i.fitness)
-
-
-def cross_over(g1, g2):
-    cut = random.randint(0, PROBLEM_SIZE)
-    return g1[:cut] + g2[cut:]
-
-
-def mutation(g):
-    point = random.randint(0, PROBLEM_SIZE - 1)
-    return g[:point] + (1 - g[point],) + g[point + 1 :]
-
 def main():
-    pass
+    list_of_lists = problem(N, seed=42) # Original problem generation
+
+    list_of_lists = tuple(t for t in set(_ for _ in list_of_lists)) # Remove duplicate lists and cast to tuples
+
+    # Initial population -> random selection and cast to Individuals (not a tournament)
+    population = list()
+    for _ in range(POPULATION_SIZE):
+        subset_list = tuple(random.sample(list_of_lists, k=random.randint(1, len(list_of_lists)))) # Random subset of the lists of lists
+        population.append(Individual(subset_list, set_covering_fitness(subset_list)))
+    
+
+    # Evolution
+
+    for g in range(NUM_GENERATIONS):
+        offspring = list()
+        for i in range(OFFSPRING_SIZE):
+            if random.random() < MUTATION_RATE:
+                p = tournament(population, tournament_size=TOURNAMENT_SIZE)
+                o = mutation(p.genome, N)
+            else:
+                p1 = tournament(population, tournament_size=TOURNAMENT_SIZE)
+                p2 = tournament(population, tournament_size=TOURNAMENT_SIZE)
+                o = cross_over(p1.genome, p2.genome)
+            f = set_covering_fitness(o)
+            offspring.append(Individual(o, f))
+        population += offspring
+        population = sorted(population, key=lambda i: i.fitness, reverse=True)[:POPULATION_SIZE]
+
+    for idx, i in enumerate(population):
+        logging.info(f'individual {idx + 1} -> fitness: {i.fitness}, solved problem? {goal_test(i.genome, GOAL)}, w={sum(len(_) for _ in i.genome)}')
+    
+    
 
 if __name__ == '__main__':
     main()
