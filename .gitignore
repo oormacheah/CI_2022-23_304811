@@ -4,3 +4,5 @@ lab1/solution.py
 .python-version
 lab2/__pycache__/
 lab2/test_nb.ipynb
+lab3/RL maze/
+lab3/test.ipynb
