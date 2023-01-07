@@ -35,10 +35,9 @@ def my_strategy(state: Nim) -> Nimply:
     # If there is a k and you got more than k + 1 or k
     return Nimply(next_active_row, state.k) # Subtract the max k allowed
 
-
-
-# Evolvable strategy
+# Task 3.2 - Evolvable strategy
 def make_strategy(genome: dict) -> Callable:
+
     def evolvable(state: Nim) -> Nimply:
         data = cook_status(state)
 

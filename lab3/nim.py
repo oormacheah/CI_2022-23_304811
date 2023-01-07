@@ -59,12 +59,12 @@ def cook_status(state: Nim) -> dict:
 
     return cooked
 
-def single_match(strategy1, strategy2):
+def single_match(strategy1, strategy2, nim_size):
     logging.getLogger().setLevel(logging.DEBUG)
 
     strategy = (strategy1, strategy2)
 
-    nim = Nim(11)
+    nim = Nim(nim_size)
     logging.debug(f"status: Initial board  -> {nim}")
     player = 0 # Initial player
     while nim:
@@ -74,6 +74,7 @@ def single_match(strategy1, strategy2):
         player = 1 - player
     winner = 1 - player
     logging.info(f"status: Player {winner} won!")
+    return winner
 
 def evaluate(strategy: Callable, reference_strategy: Callable, NUM_MATCHES: int, NIM_SIZE: int) -> float:
     '''

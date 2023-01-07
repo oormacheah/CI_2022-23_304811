@@ -1,9 +1,13 @@
 from nim import *
 from strategies import *
 
-single_match(my_strategy, gabriele)
+# single_match(my_strategy, gabriele)
 
 print()
 
-print(evaluate(my_strategy, gabriele, 150, 15))
+# Fixed strategy
+print(evaluate(my_strategy, optimal_strategy, 500, 4))
+
+# Sequence of "training" matches
+
 
