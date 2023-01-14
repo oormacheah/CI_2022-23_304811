@@ -18,3 +18,9 @@ My personal approach. This strategy is by no means attempting to compete with ni
 This strategy performs better than "gabriele" and "pure_random".
 
 ### Task 3.2
+Evolutionary algorithm approach. This strategy works under the parameters of a generic genetic algorithm, plus some application-specific elements. 
+* POPULATION_SIZE
+* OFFSPRING_SIZE
+* NUM_GENERATIONS
+* MUTATION_RATE
+And, in addition, it has the 
