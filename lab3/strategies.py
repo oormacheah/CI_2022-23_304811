@@ -1,4 +1,13 @@
 from nim import *
+import numpy as np
+
+strategies_str = [
+    'remove1',
+    'my_fixed_rule',
+    'pure_random',
+    'gabriele',
+    'nim_sum',
+]
 
 def pure_random(state: Nim) -> Nimply:
     row = random.choice([r for r, c in enumerate(state.rows) if c > 0])
@@ -40,29 +49,22 @@ def my_fixed_strategy(state: Nim) -> Nimply:
     return Nimply(next_active_row, state.k) # Subtract the max k allowed
 
 # Task 3.2 - Evolvable strategy
-def make_strategy(genome: dict) -> Callable:
+def make_strategy(genome: np.ndarray) -> Callable:
 
     def evolvable(state: Nim) -> Nimply:
-        data = cook_status(state)
-        print('Called "evolvable"')
-
-        chosen_strat = np.random.choice(strategies_str, 1, p=genome)
+        # print(genome.sum())
+        chosen_strat = np.random.choice(strategies_str, 1, p=genome)[0]
         
-        if chosen_strat == '1':
-
-        elif chosen_strat == '2':
-            
-        elif chosen_strat == '3':
-            
-        elif chosen_strat == '4':
-            
-        elif chosen_strat == '5':
-            
-
-        if random.random() < genome["p"]:
-            ply = Nimply(data["shortest_row"], random.randint(1, state.rows[data["shortest_row"]]))
-        else:
-            ply = Nimply(data["longest_row"], random.randint(1, state.rows[data["longest_row"]]))
+        if chosen_strat == 'remove1':
+            ply = grab_one(state)
+        elif chosen_strat == 'my_fixed_rule':
+            ply = my_fixed_strategy(state)
+        elif chosen_strat == 'pure_random':
+            ply = pure_random(state)
+        elif chosen_strat == 'gabriele':
+            ply = gabriele(state)
+        elif chosen_strat == 'nim_sum':
+            ply = optimal_strategy(state)
 
         return ply
 
