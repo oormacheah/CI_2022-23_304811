@@ -60,7 +60,6 @@ def cook_status(state: Nim) -> dict:
     return cooked
 
 def single_match(strategy1, strategy2, nim_size):
-    logging.getLogger().setLevel(logging.DEBUG)
 
     strategy = (strategy1, strategy2)
 
