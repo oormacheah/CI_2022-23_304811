@@ -1,4 +1,5 @@
 from nim import *
+import numpy as np
 
 def pure_random(state: Nim) -> Nimply:
     row = random.choice([r for r, c in enumerate(state.rows) if c > 0])
@@ -36,7 +37,9 @@ def my_strategy(state: Nim) -> Nimply:
     return Nimply(next_active_row, state.k) # Subtract the max k allowed
 
 # Task 3.2 - Evolvable strategy
-def make_strategy(genome: dict) -> Callable:
+def make_strategy(genome: list) -> Callable:
+
+    p = np.random.choice()
 
     def evolvable(state: Nim) -> Nimply:
         data = cook_status(state)

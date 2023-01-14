@@ -2,6 +2,7 @@ import random
 import logging
 from nim import *
 from strategies import *
+import numpy as np
 
 NIM_SIZE = 15
 POPULATION_SIZE = 300
@@ -10,6 +11,29 @@ NUM_GENERATIONS = 1000
 TOURNAMENT_SIZE = 2
 N_MATCHES = 10
 MUTATION_RATE = 0.3
+
+Individual = namedtuple("Individual", ["genome"])
+
+# class Genome:
+#     def __init__(self, genome_list):
+#         self._genome_list = genome_list
+#         self._dict = dict()
+#         self._dict["remove_1"] = genome_list[0]
+#         self._dict["my_rule"] = genome_list[1]
+#         self._dict["pure_random"] = genome_list[2]
+#         self._dict["gabriele"] = genome_list[3]
+#         self._dict["xor"] = genome_list[4]
+#         self._dict["and"] = genome_list[5]
+
+#     def get_list(self):
+#         return self._genome_list
+
+#     def __getitem__(self, key):
+#         return self._dict[key]
+
+#     def __repr__(self):
+#         return repr(self._dict)
+
 
 def tournament(population):
     selected_individuals = random.sample(population, k=2)
@@ -25,15 +49,16 @@ def tournament(population):
         winner = single_match(player0, player1, NIM_SIZE)
         win_count[winner] += 1
 
-        # Match 2
+        # Match 2 (inverted order)
         winner = single_match(player1, player0, NIM_SIZE)
         win_count[winner] += 1
     
     top_g = max(enumerate(win_count), key=lambda y: y[1])[0]
 
-    return top_g
+    return selected_individuals[top_g]
 
 def cross_over(g1, g2):
+    # One cut crossover, simple
     cut_percent = random.random() # For the proportional cut
     cut1 = int(cut_percent * len(g1))
     cut2 = int(cut_percent * len(g2))
@@ -69,8 +94,13 @@ def evolution():
     # Initial population
     population = list()
     for _ in range(POPULATION_SIZE):
-        subset_list = tuple(random.sample(list_of_lists, k=random.randint(1, len(list_of_lists)))) # Random subset of the lists of lists
-        population.append(Individual(subset_list, set_covering_fitness(subset_list)))
+        
+        # Genome
+        probs = np.array([random.random() for _ in range(5)])
+        tot = probs.sum()
+        normalized_genome = probs / tot
+
+        population.append(Individual(normalized_genome))
 
 
     # Evolution
@@ -80,15 +110,14 @@ def evolution():
         for i in range(OFFSPRING_SIZE):
             if random.random() < MUTATION_RATE:
                 p = tournament(population, tournament_size=TOURNAMENT_SIZE)
-                o = mutation(p.genome, N)
+                o = mutation(p.genome)
             else:
                 p1 = tournament(population, tournament_size=TOURNAMENT_SIZE)
                 p2 = tournament(population, tournament_size=TOURNAMENT_SIZE)
                 o = cross_over(p1.genome, p2.genome)
-            f = set_covering_fitness(o)
-            offspring.append(Individual(o, f))
+            offspring.append(Individual(o))
         population += offspring
-        population = sorted(population, key=lambda i: i.fitness, reverse=True)[:POPULATION_SIZE]
+        population = population[:POPULATION_SIZE]
 
     for idx, i in enumerate(population):
         logging.info(f'individual {idx + 1} -> fitness: {i.fitness}, solved problem? {goal_test(i.genome, GOAL)}, w={sum(len(_) for _ in i.genome)}')
