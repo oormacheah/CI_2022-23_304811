@@ -1,4 +1,10 @@
 from nim import *
+import numpy as np
+
+strategies_str = [
+
+]
+
 
 def pure_random(state: Nim) -> Nimply:
     row = random.choice([r for r, c in enumerate(state.rows) if c > 0])
@@ -15,8 +21,12 @@ def optimal_strategy(state: Nim) -> Nimply:
     return next((bf for bf in data["brute_force"] if bf[1] == 0), random.choice(data["brute_force"]))[0]
     # Iterator may be exhausted if no possible move gives 0 nim-sum, so that you would pick at random
 
+def grab_one(state: Nim) -> Nimply:
+    row = random.choice([r for r, c in enumerate(state.rows) if c > 0])
+    return Nimply(row, 1)
+
 # Task 3.1 - Fixed rules
-def my_strategy(state: Nim) -> Nimply:
+def my_fixed_strategy(state: Nim) -> Nimply:
     data = cook_status(state)
     if all(r <= 1 for r in state.rows):
         return (random.choice(data["brute_force"]))[0]
@@ -36,10 +46,24 @@ def my_strategy(state: Nim) -> Nimply:
     return Nimply(next_active_row, state.k) # Subtract the max k allowed
 
 # Task 3.2 - Evolvable strategy
-def make_strategy(genome: dict) -> Callable:
+def make_strategy(genome: np.ndarray) -> Callable:
 
     def evolvable(state: Nim) -> Nimply:
         data = cook_status(state)
+        print('Called "evolvable"')
+
+        chosen_strat = np.random.choice(strategies_str, 1, p=genome)
+        
+        if chosen_strat == '1':
+
+        elif chosen_strat == '2':
+            
+        elif chosen_strat == '3':
+            
+        elif chosen_strat == '4':
+            
+        elif chosen_strat == '5':
+            
 
         if random.random() < genome["p"]:
             ply = Nimply(data["shortest_row"], random.randint(1, state.rows[data["shortest_row"]]))
