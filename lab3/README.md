@@ -24,3 +24,6 @@ Evolutionary algorithm approach. This strategy works under the parameters of a g
 * NUM_GENERATIONS
 * MUTATION_RATE
 And, in addition, it has the 
+
+### Task 3.2
+Very important note: With N=4 (Nim size), even if the player is optimal it won't win against another optimal opponent. Also N=8 and maybe others but I didn't test.

@@ -11,7 +11,7 @@ strategies_str = [
 
 def pure_random(state: Nim) -> Nimply:
     row = random.choice([r for r, c in enumerate(state.rows) if c > 0])
-    num_objects = random.randint(1, state.rows[row])
+    num_objects = random.randint(1, state.k if state.k is not None and state.rows[row] > state.k else state.rows[row])
     return Nimply(row, num_objects)
 
 def gabriele(state: Nim) -> Nimply:

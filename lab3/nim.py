@@ -34,6 +34,11 @@ class Nim:
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
 
+def nimming_new_obj(state: Nim, ply: Nimply) -> Nim:
+    state_copy = deepcopy(state)
+    state_copy.nimming(ply)
+    return state_copy
+
 def nim_sum(state: Nim) -> int:
     *_, result = accumulate(state.rows, xor)
     return result
@@ -59,11 +64,11 @@ def cook_status(state: Nim) -> dict:
 
     return cooked
 
-def single_match(strategy1, strategy2, nim_size):
+def single_match(strategy1, strategy2, nim_size, k=None):
 
     strategy = (strategy1, strategy2)
 
-    nim = Nim(nim_size)
+    nim = Nim(nim_size, k)
     logging.debug(f"status: Initial board  -> {nim}")
     player = 0 # Initial player
     while nim:
