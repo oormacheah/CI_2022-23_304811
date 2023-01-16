@@ -1,15 +1,17 @@
 from nim import *
 from strategies import *
+from min_max_agent import *
 
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 # single_match(my_strategy, gabriele)
 
-print(single_match(make_strategy({'p': 0.7}), pure_random, 10))
+# print(single_match(make_strategy({'p': 0.7}), pure_random, 10))
 
 # Fixed strategy
 # print(evaluate(my_strategy, optimal_strategy, 500, 4))
+# min_max_strategy = minimax_strategy(depth=5)
 
-# Sequence of "training" matches
+single_match(minimax_strategy(), optimal_strategy, 4, k=3)
 
 
