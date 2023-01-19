@@ -1,24 +1,28 @@
 import logging
-import random
 from typing import Callable
 from operator import xor
 from copy import deepcopy
-from itertools import accumulate
+from itertools import accumulate, product
 from collections import namedtuple
 
 
 Nimply = namedtuple("Nimply", ['row', 'num_objects'])
 
 class Nim:
-    def __init__(self, num_rows: int, k: int = None) -> None:
+    def __init__(self, num_rows: int, k: int = None, RL = False) -> None:
         self._rows = [i * 2 + 1 for i in range(num_rows)]
         self._k = k
+        if RL:
+            self.construct_allowed_states()
 
     def __bool__(self):
         return sum(self._rows) > 0
 
     def __str__(self):
         return "<" + " ".join(str(_) for _ in self._rows) + ">"
+
+    def __hash__(self):
+        return tuple(sorted(self._rows))
 
     @property
     def rows(self) -> tuple:
@@ -34,6 +38,32 @@ class Nim:
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
 
+    def possible_states(self):
+        poss_val_per_row = [list(range(row_val + 1)) for row_val in self.rows]
+        return tuple(set([tuple(sorted(t)) for t in product(*poss_val_per_row)]))
+
+    def construct_allowed_states(self):
+        # create a dictionary of allowed state transitions from any board combination -> To optimize, consider equivalent game states
+        # with a sorted tuple object
+        allowed_states = {}
+        for possible_state in self.possible_states():
+            # iterate through all possible states, equivalent game states have been removed
+            allowed_states[possible_state] = [
+                Nimply(r, o) for r, c in enumerate(self.rows) for o in range(1, c + 1) if self.k is None or o <= self.k
+            ]
+        self.allowed_states = allowed_states
+
+    def is_game_over(self):
+        # 'self' object is boolean-evaluated as sum(self._rows) > 0
+        return not self
+
+    def get_state_and_reward(self, agent_playing=True):
+        return self.rows, self.give_reward(agent_playing)
+
+    def give_reward(self, agent_playing):
+        # if win enduieqjdnuiqwa
+        return -1 * int(self.is_game_over())
+
 def nimming_new_obj(state: Nim, ply: Nimply) -> Nim:
     state_copy = deepcopy(state)
     state_copy.nimming(ply)
@@ -46,7 +76,7 @@ def nim_sum(state: Nim) -> int:
 def cook_status(state: Nim) -> dict:
     cooked = dict()
     cooked["possible_moves"] = [
-        (r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1) if state.k is None or o <= state.k
+        Nimply(r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1) if state.k is None or o <= state.k
         # 'c' is total number of elements per row, 'o' is a number of objects to grab if it's below 'k'
     ]
     cooked["active_rows_number"] = sum(o > 0 for o in state.rows)

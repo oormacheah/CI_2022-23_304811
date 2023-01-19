@@ -1,5 +1,4 @@
 from nim import *
-from copy import deepcopy
 from functools import cache
 
 def possible_moves(state: Nim):

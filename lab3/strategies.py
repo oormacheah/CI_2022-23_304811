@@ -1,4 +1,5 @@
 from nim import *
+import random
 import numpy as np
 
 strategies_str = [
@@ -52,7 +53,6 @@ def my_fixed_strategy(state: Nim) -> Nimply:
 def make_strategy(genome: np.ndarray) -> Callable:
 
     def evolvable(state: Nim) -> Nimply:
-        # print(genome.sum())
         chosen_strat = np.random.choice(strategies_str, 1, p=genome)[0]
         
         if chosen_strat == 'remove1':
