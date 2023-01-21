@@ -12,6 +12,6 @@ logging.getLogger().setLevel(logging.DEBUG)
 # print(evaluate(my_strategy, optimal_strategy, 500, 4))
 # min_max_strategy = minimax_strategy(depth=5)
 
-single_match(optimal_strategy, optimal_strategy, 3)
+single_match(optimal_strategy, optimal_strategy, 4)
 
 

@@ -46,20 +46,21 @@ class Agent(object):
     def learn(self):
         # target = 1
         # exit()
+        i = -1
         for i in range(len(self.state_action_history) - 1):
             st, act, reward = self.state_action_history[i]
             new_st, _, _ = self.state_action_history[i + 1]
             self.Q[st][act] += self.alpha * (reward + self.discount_factor * max(self.Q[new_st].values()) - self.Q[st][act])
             # target += reward
 
-        # Add the missing part of the puzzleù
+        # Add the missing part of the puzzle
         i += 1
         st, act, reward = self.state_action_history[i]
         self.Q[st][act] += self.alpha * (reward - self.Q[st][act])
 
         self.state_action_history = []
 
-        # self.random_factor -= 10e-5  # decrease random factor each episode of play
+        self.random_factor -= 10e-5  # decrease random factor each episode of play
 
     def ply(self, state: Nim) -> Nimply:
         return self.choose_action(state, state.allowed_states[state.rows], evaluation=True)
