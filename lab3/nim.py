@@ -22,7 +22,10 @@ class Nim:
         return "<" + " ".join(str(_) for _ in self._rows) + ">"
 
     def __hash__(self):
-        return tuple(sorted(self._rows))
+        return hash(tuple(self._rows))
+
+    def __eq__(self, other):
+        return (self.rows) == (other)
 
     @property
     def rows(self) -> tuple:
@@ -37,10 +40,16 @@ class Nim:
         assert self._rows[row] >= num_objects
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
+        self._rows.sort()
 
     def possible_states(self):
         poss_val_per_row = [list(range(row_val + 1)) for row_val in self.rows]
         return tuple(set([tuple(sorted(t)) for t in product(*poss_val_per_row)]))
+
+    def possible_moves(self):
+        return [
+            Nimply(r, o) for r, c in enumerate(self.rows) for o in range(1, c + 1) if self.k is None or o <= self.k
+        ]
 
     def construct_allowed_states(self):
         # create a dictionary of allowed state transitions from any board combination -> To optimize, consider equivalent game states
@@ -48,21 +57,25 @@ class Nim:
         allowed_states = {}
         for possible_state in self.possible_states():
             # iterate through all possible states, equivalent game states have been removed
-            allowed_states[possible_state] = [
-                Nimply(r, o) for r, c in enumerate(self.rows) for o in range(1, c + 1) if self.k is None or o <= self.k
-            ]
+            allowed_states[possible_state] = possible_moves_external(possible_state, self.k)
         self.allowed_states = allowed_states
 
     def is_game_over(self):
         # 'self' object is boolean-evaluated as sum(self._rows) > 0
         return not self
 
-    def get_state_and_reward(self, agent_playing=True):
-        return self.rows, self.give_reward(agent_playing)
+    def get_reward(self, winner=None):
+        if winner is None:
+            return 0
+        elif winner == True:
+            return 1
+        elif winner == False:
+            return -1
 
-    def give_reward(self, agent_playing):
-        # if win enduieqjdnuiqwa
-        return -1 * int(self.is_game_over())
+def possible_moves_external(rows_state: tuple, k: int=None):
+    return [
+            Nimply(r, o) for r, c in enumerate(rows_state) for o in range(1, c + 1) if k is None or o <= k
+        ]
 
 def nimming_new_obj(state: Nim, ply: Nimply) -> Nim:
     state_copy = deepcopy(state)
@@ -84,7 +97,6 @@ def cook_status(state: Nim) -> dict:
     cooked["shortest_row"] = min((x for x in enumerate(state.rows) if x[1] > 0), key=lambda y: y[1])[0]
     cooked["longest_row"] = max((x for x in enumerate(state.rows)), key=lambda y: y[1])[0]
     cooked["nim_sum"] = nim_sum(state)
-
     brute_force = list()
     for m in cooked["possible_moves"]:
         tmp = deepcopy(state)
@@ -110,7 +122,7 @@ def single_match(strategy1, strategy2, nim_size, k=None):
     logging.info(f"status: Player {winner} won!")
     return winner
 
-def evaluate(strategy: Callable, reference_strategy: Callable, NUM_MATCHES: int, NIM_SIZE: int) -> float:
+def evaluate(strategy: Callable, reference_strategy: Callable, NUM_MATCHES: int, NIM_SIZE: int, k=None, RL=False) -> float:
     '''
     Evaluate multiple games against a given strategy (usually nim-sum), your proposed strategy moves first
     '''
@@ -120,7 +132,7 @@ def evaluate(strategy: Callable, reference_strategy: Callable, NUM_MATCHES: int,
     won = 0
 
     for m in range(NUM_MATCHES):
-        nim = Nim(NIM_SIZE)
+        nim = Nim(NIM_SIZE, k, RL)
         player = 0 # Setting the passed strategy to perform the first move
         while nim:
             ply = opponent[player](nim)
