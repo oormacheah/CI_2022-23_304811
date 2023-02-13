@@ -6,12 +6,12 @@ from GA_functions import *
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-N = 1000
+N = 100
 
-POPULATION_SIZE = 300
-OFFSPRING_SIZE = 300
-NUM_GENERATIONS = 1000
-TOURNAMENT_SIZE = 2
+POPULATION_SIZE = 1000
+OFFSPRING_SIZE = 100
+NUM_GENERATIONS = 700
+TOURNAMENT_SIZE = 100
 MUTATION_RATE = 0.3
 
 GOAL = set(range(N))

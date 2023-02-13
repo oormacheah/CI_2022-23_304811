@@ -4,13 +4,13 @@ from nim import *
 from strategies import *
 import numpy as np
 
-NIM_SIZE = 6
-POPULATION_SIZE = 10
-OFFSPRING_SIZE = 50
-NUM_GENERATIONS = 30
+NIM_SIZE = 4
+POPULATION_SIZE = 50
+OFFSPRING_SIZE = 30
+NUM_GENERATIONS = 100
 TOURNAMENT_SIZE = 2
 N_MATCHES = 50
-MUTATION_RATE = 0.1
+MUTATION_RATE = 0.3
 
 Individual = namedtuple("Individual", ["genome"])
 
@@ -55,11 +55,12 @@ def cross_over(g1, g2):
 
         max_val = max(current_val1, current_val2)
 
-        # added_p = random.random() * max_val
-        # new_max = max_val + added_p
-        
-        # new_gene[highest1] = new_max
-        new_gene[highest1] = max_val
+        added_p = random.random() * max_val
+        new_max = max_val + added_p
+        new_gene[highest1] = new_max
+
+        # new_gene[highest1] = max_val
+
         for i in range(len(new_gene)):
             if i != highest1:
                 random.seed()
@@ -115,7 +116,7 @@ def evolution():
         random.shuffle(population)
 
     for idx, i in enumerate(population):
-        print(f'individual {idx + 1} -> genome: {list(i.genome)})')
+        print(f'individual {idx + 1} -> genome: {[round(n, 3) for n in list(i.genome)]}')
 
 if __name__ == '__main__':
     evolution()
